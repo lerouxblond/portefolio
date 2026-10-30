@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ethan Houziaux — Développeur Full Stack</title>
+    <meta name="description" content="Portfolio d'Ethan Houziaux, développeur full stack à Rouen, entre jeux vidéo et web. En recherche d'une alternance Bac+5." />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#FFF8F0" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#120E0B" media="(prefers-color-scheme: dark)" />
+    <meta property="og:title" content="Ethan Houziaux — Développeur Full Stack" />
+    <meta property="og:description" content="Entre jeux vidéo et web. React, TypeScript, Go, PostgreSQL." />
+    <meta property="og:locale" content="fr_FR" />
+    <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      // Applique le thème mémorisé avant le premier rendu (pas de flash).
+      ;(function () {
+        try {
+          var t = localStorage.getItem('theme')
+          if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+        } catch (e) {}
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,5 @@
+Déposer ici le CV au format PDF sous le nom exact :
+
+  EthanHouziaux_CV_2026.pdf
+
+Les boutons « Télécharger le CV » du site pointent vers cv/EthanHouziaux_CV_2026.pdf.
