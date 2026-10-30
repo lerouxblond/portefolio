@@ -3,3 +3,7 @@ dist
 *.local
 .DS_Store
 .vite
+
+# Worker du formulaire de contact
+worker/.dev.vars
+worker/.wrangler

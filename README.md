@@ -37,6 +37,7 @@ Si le dépôt change de nom, mettre à jour `base` dans `vite.config.ts`.
 | Projets | `src/data/projects.ts` |
 | Stack (icônes [skillicons.dev](https://skillicons.dev)) | `src/data/stack.ts` |
 | CV PDF | `public/cv/EthanHouziaux_CV_2026.pdf` (à déposer) |
+| Relais du formulaire → Discord | `worker/` (Cloudflare Worker) |
 
 ## Visuels
 
@@ -85,14 +86,33 @@ Les sprites ajoutés (renard de profil qui trotte en 4 images, yeux contents / t
 ## Formulaire de contact
 
 `src/lib/contact.ts` expose `sendContactMessage({ name, email, subject, message })`, qui fait un `POST` JSON
-vers `VITE_CONTACT_ENDPOINT` (voir `.env.example`). Ce point d'entrée doit être un relais (Cloudflare Worker
-ou équivalent) qui transmet à Discord : **l'URL du webhook Discord ne doit jamais être dans le front**,
-toute variable `VITE_*` est publiée en clair. Le relais doit revalider les champs et limiter le débit.
+vers `VITE_CONTACT_ENDPOINT` (voir `.env.example`). Ce point d'entrée est le relais `worker/` (Cloudflare Worker),
+qui transmet à Discord : **l'URL du webhook Discord ne doit jamais être dans le front**, toute variable `VITE_*`
+est publiée en clair. Elle vit uniquement dans un secret du Worker.
+
+Le relais (`worker/src/index.ts`) :
+
+- n'accepte que les origines de `ALLOWED_ORIGINS` (`worker/wrangler.toml`), en `POST` JSON de 8 Ko au plus ;
+- revalide les champs avec les mêmes bornes que `src/lib/contact.ts` (400 sinon) ;
+- limite à 3 messages par minute et par IP (429) ;
+- poste un embed Discord orange renard (objet, message, nom, e-mail cliquable, date), mentions `@everyone` neutralisées ;
+- répond 204, ou 502 si Discord refuse (le site propose alors le lien `mailto:`).
+
+Mise en place (une fois) :
+
+1. Discord : paramètres du salon › Intégrations › Webhooks › Nouveau webhook › copier l'URL.
+2. `cd worker && npm install && npx wrangler login` (connexion Cloudflare par le navigateur).
+3. `npx wrangler secret put DISCORD_WEBHOOK_URL` (coller l'URL), puis `npm run deploy`
+   → le Worker répond sur `https://portefolio-contact.<compte>.workers.dev`.
+4. GitHub › Settings › Secrets and variables › Actions › onglet **Variables** : `VITE_CONTACT_ENDPOINT` = cette URL.
+   `deploy.yml` la passe à `npm run build`.
+5. Relancer le workflow (ou pousser sur `main`).
+
+En local : copier `worker/.dev.vars.example` en `worker/.dev.vars` avec l'URL du webhook, `npm run dev` dans `worker/`
+(port 8787), et `VITE_CONTACT_ENDPOINT=http://localhost:8787` dans `.env.local` du site.
 
 - Sans variable : envoi simulé en dev (`npm run dev`) ; en production, le formulaire propose un lien
   `mailto:` prérempli avec le message.
-- En production : fournir la variable au build, par exemple dans `deploy.yml` sur l'étape `npm run build` :
-  `env: { VITE_CONTACT_ENDPOINT: ${{ vars.VITE_CONTACT_ENDPOINT }} }` (variable de dépôt GitHub).
 - Anti-robots : champ piège `website` invisible ; s'il est rempli, rien n'est envoyé (succès simulé).
 
 ## Thème et accessibilité

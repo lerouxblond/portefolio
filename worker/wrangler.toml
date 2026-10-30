@@ -1,0 +1,15 @@
+# Relais du formulaire de contact : reçoit le POST du site et le transmet à Discord.
+# Secret à définir une fois : npx wrangler secret put DISCORD_WEBHOOK_URL
+name = "portefolio-contact"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+
+[vars]
+# Origines autorisées (CORS), séparées par des virgules.
+ALLOWED_ORIGINS = "https://lerouxblond.github.io,http://localhost:5173,http://localhost:4173"
+
+# Limite de débit par adresse IP : 3 messages par minute.
+[[ratelimits]]
+name = "CONTACT_LIMITER"
+namespace_id = "1001"
+simple = { limit = 3, period = 60 }
