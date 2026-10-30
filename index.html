@@ -21,14 +21,67 @@
     <script>
       // Applique le thème mémorisé avant le premier rendu (pas de flash).
       ;(function () {
+        var root = document.documentElement
         try {
           var t = localStorage.getItem('theme')
-          if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t
+          if (t === 'light' || t === 'dark') root.dataset.theme = t
+        } catch (e) {}
+        // Intro (rideau) : posée avant le premier rendu pour que la page n'apparaisse pas avant lui.
+        // Jamais avec « réduire les animations » ; retirée d'office si le script de la page ne démarre pas.
+        try {
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            root.classList.add('intro')
+            if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
+            setTimeout(function () {
+              if (!window.__introStarted) root.classList.remove('intro')
+            }, 5000)
+          }
         } catch (e) {}
       })()
     </script>
+    <style>
+      /* Rideau d'intro : couleurs en dur (la feuille de styles peut arriver après le premier rendu). */
+      #intro {
+        --intro-bg: #fff8f0;
+        display: none;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) #intro {
+          --intro-bg: #120e0b;
+        }
+      }
+      :root[data-theme='dark'] #intro {
+        --intro-bg: #120e0b;
+      }
+      html.intro {
+        overflow: hidden;
+        scrollbar-gutter: stable;
+      }
+      html.intro #intro {
+        display: block;
+        position: fixed;
+        inset: 0;
+        z-index: 200;
+        cursor: pointer;
+      }
+      .intro__curtain {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: var(--intro-bg);
+      }
+    </style>
+    <noscript><style>html.intro { overflow: auto; } #intro { display: none !important; }</style></noscript>
   </head>
   <body>
+    <div id="intro" aria-hidden="true">
+      <div class="intro__curtain">
+        <span class="intro__edge"></span>
+        <div class="intro__mark"></div>
+        <span class="intro__skip">cliquer pour passer</span>
+      </div>
+    </div>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

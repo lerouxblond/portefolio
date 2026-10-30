@@ -1,0 +1,295 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Phase 3 : transitions au défilement (GSAP + ScrollTrigger + Lenis).
+   La logique est dans src/lib/scenes.ts ; ici la mise en page qui la porte.
+   « Deux vitesses » : courbes fluides pour les textes et les blocs (JS),
+   paliers uniquement pour les éléments pixel (renards, empreintes, poussière).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+html.lenis {
+  scroll-behavior: auto;
+}
+
+/* ─── Intro (le rideau lui-même est dans index.html) ─────────────────── */
+.intro__curtain {
+  will-change: transform;
+}
+.intro__edge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -47px;
+  height: 48px;
+  background: var(--intro-bg);
+  -webkit-mask-image: var(--edge-mask);
+  mask-image: var(--edge-mask);
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-position: left bottom;
+  mask-position: left bottom;
+  -webkit-mask-size: 640px 48px;
+  mask-size: 640px 48px;
+}
+.intro__mark {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+}
+.intro__head {
+  width: 96px;
+  height: auto;
+}
+.intro__name {
+  width: min(340px, 78vw);
+  height: auto;
+  color: var(--ink);
+}
+.intro__skip {
+  position: absolute;
+  bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+/* Le « > salut… » se tape une fois le rideau levé, pas dessous. */
+html.intro .hero__typed,
+html.intro .hero__cursor {
+  animation-play-state: paused;
+}
+
+/* ─── Sections pleine largeur, fonds alternés ────────────────────────── */
+.page {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  container-type: inline-size;
+  /* Marge latérale qui garde le contenu dans la colonne de 1140 px. */
+  --pad: max(var(--gutter), calc((100cqw - var(--maxw)) / 2 + var(--gutter)));
+}
+.section {
+  --sec-bg: var(--bg);
+  position: relative;
+  z-index: 1;
+  background: var(--sec-bg);
+  padding: clamp(64px, 9vw, 112px) var(--pad) clamp(48px, 6vw, 80px);
+}
+.section--band {
+  --sec-bg: var(--bg-band);
+}
+.hero {
+  z-index: 0;
+  min-height: calc(100svh - 63px);
+}
+
+/* C. Lisière pixel : sapins à la couleur de la section, posés sur son bord haut. */
+.edge {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -44px;
+  height: 48px;
+  z-index: 2;
+  pointer-events: none;
+  background: var(--sec-bg, var(--bg));
+  -webkit-mask-image: var(--edge-mask);
+  mask-image: var(--edge-mask);
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-position: left bottom;
+  mask-position: left bottom;
+  -webkit-mask-size: 640px 48px;
+  mask-size: 640px 48px;
+}
+.site-footer {
+  --sec-bg: var(--bg-band);
+  position: relative;
+  z-index: 1;
+  margin-top: 0;
+  border-top: 0;
+  padding-top: 56px;
+}
+
+/* ─── B. Plongée : calques de la scène ───────────────────────────────── */
+.hero__layer {
+  position: absolute;
+  inset: 0;
+  transform-origin: 50% 100%;
+}
+/* Le renard est peint après le sol, dans le calque proche. */
+.hero__layer .hero-fox {
+  z-index: auto;
+}
+.hero__content {
+  transform-origin: 0 50%;
+}
+/* Hors écran : plus de peinture des calques animés (étoiles, feuilles, lucioles). */
+.hero.is-offscreen .hero__layer img {
+  visibility: hidden;
+}
+.hero.is-offscreen * {
+  animation-play-state: paused !important;
+}
+
+/* ─── Textes ligne par ligne (découpés par scenes.ts) ────────────────── */
+.line {
+  display: block;
+  overflow: hidden;
+  /* un peu d'air pour les jambages, compensé */
+  padding-bottom: 0.08em;
+  margin-bottom: -0.08em;
+}
+.line > span {
+  display: block;
+}
+
+/* ─── D. Galerie horizontale des projets ─────────────────────────────── */
+.lane {
+  display: none;
+}
+.is-gallery .gallery {
+  margin: 12px calc(-1 * var(--pad)) 0;
+}
+/* Élément épinglé (position fixe pendant l'épingle) : c'est lui qui rogne la piste horizontale. */
+.is-gallery .gallery__pin {
+  overflow-x: clip;
+}
+.is-gallery .projects {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 40px;
+  width: max-content;
+  margin-top: 0;
+  padding: 52px var(--pad) 0;
+}
+/* Largeurs des cartes : réglées pour que la plus haute tienne sous l'en-tête dès ~730 px de haut. */
+.is-gallery .project-slot {
+  flex: none;
+  width: min(600px, 46vw);
+}
+.is-gallery .project-slot--wide {
+  width: min(1000px, 74vw);
+}
+/* Unity : les 5 jeux sur une seule rangée, la carte reste basse. */
+.is-gallery .project-slot:has(> .project--unity) {
+  width: min(1240px, 88vw);
+}
+.is-gallery .project--unity .subprojects--grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.is-gallery .trot-lane {
+  display: none;
+}
+.is-gallery .lane {
+  display: block;
+  position: relative;
+  height: 76px;
+}
+.lane__ground {
+  position: absolute;
+  inset: auto 0 10px 0;
+  height: 9px;
+  background:
+    linear-gradient(var(--edge), var(--edge)) 0 100% / 100% var(--px) no-repeat,
+    repeating-linear-gradient(90deg, var(--edge) 0 3px, transparent 3px 27px, var(--edge) 27px 30px, transparent 30px 45px) 0 3px /
+      100% 3px no-repeat;
+}
+.runner {
+  position: absolute;
+  left: 0;
+  bottom: 13px;
+  width: 96px;
+}
+.runner__fox {
+  display: block;
+  width: 96px;
+  max-width: none;
+  height: auto;
+  transform-origin: 50% 100%;
+}
+.runner__fox g {
+  display: none;
+}
+.runner__fox g.on {
+  display: inline;
+}
+.runner__shadow {
+  position: absolute;
+  left: 14px;
+  right: 18px;
+  bottom: -4px;
+  height: var(--px);
+  background: color-mix(in srgb, var(--ink) 18%, transparent);
+}
+.dust {
+  position: absolute;
+  bottom: 14px;
+  width: 6px;
+  height: 6px;
+  background: var(--edge);
+  pointer-events: none;
+  animation: puff 0.45s steps(4) forwards;
+}
+@keyframes puff {
+  to {
+    transform: translate(var(--dx, -10px), -12px) scale(0.5);
+    opacity: 0;
+  }
+}
+.print {
+  position: absolute;
+  width: 18px;
+  height: auto;
+  color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.25s steps(3);
+}
+.print.on {
+  opacity: 0.5;
+}
+/* Têtes qui dépassent, déclenchées par la position horizontale des cartes. */
+.peek-wrap.is-peeking .peek {
+  transform: translateY(-36px);
+}
+.peek-wrap.is-peeking .peek__paws {
+  opacity: 1;
+  transition: opacity 0s 0.3s;
+}
+.peek-wrap.is-peeking .fox-eyes {
+  animation-play-state: running;
+}
+
+/* ─── Survols sans repeindre les cadres pixel ────────────────────────── */
+/* Le cadre d'accent est un pseudo-élément dont seule l'opacité change ; la carte ne fait que monter. */
+.project,
+.highlight {
+  position: relative;
+}
+.project::after,
+.highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s steps(2);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 var(--accent-soft),
+    0 var(--px) 0 var(--accent-soft),
+    calc(-1 * var(--px)) 0 0 var(--accent-soft),
+    var(--px) 0 0 var(--accent-soft);
+}
+.project--la-console::after {
+  top: -6px;
+}
+.project-slot:hover > .project::after,
+.highlight:hover::after {
+  opacity: 1;
+}
+
+/* ─── Mouvement réduit : tout est posé, rien ne bouge ────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .edge {
+    transform: none !important;
+  }
+}

@@ -1,15 +1,6 @@
 import { useMemo, type CSSProperties } from 'react'
+import { rng } from '../lib/pixels.ts'
 import { Paw, PixelText } from './Pixel.tsx'
-
-function rng(seed: number) {
-  return () => {
-    seed |= 0
-    seed = (seed + 0x6d2b79f5) | 0
-    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed)
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
-  }
-}
 
 const TRAIL_COLS = 120
 const TRAIL = ['var(--trail-1)', 'var(--trail-2)', 'var(--trail-3)', 'var(--trail-4)', 'var(--trail-5)', 'var(--trail-6)']

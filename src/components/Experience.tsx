@@ -1,6 +1,6 @@
-import type { CSSProperties } from 'react'
 import { experience } from '../data/experience.ts'
 import { CountUp } from './CountUp.tsx'
+import { Edge } from './Edge.tsx'
 import { SectionTitle } from './SectionTitle.tsx'
 
 const MODULES = ['Tableau de bord', 'CRM', 'Stock', 'Messagerie', 'Analytics', 'Newsletter']
@@ -8,7 +8,7 @@ const MODULES = ['Tableau de bord', 'CRM', 'Stock', 'Messagerie', 'Analytics', '
 /** Illustration schématique de La Console (outil interne : ni capture ni code réels). */
 function ConsoleIllustration() {
   return (
-    <figure className="console" data-reveal="dissolve">
+    <figure className="console" data-rise>
       <div className="console__window" aria-hidden="true">
         <div className="console__bar">
           <span />
@@ -68,11 +68,12 @@ function ConsoleIllustration() {
 export function Experience() {
   const e = experience
   return (
-    <section className="section" aria-labelledby="experience">
+    <section className="section section--band" aria-labelledby="experience">
+      <Edge seed={29} />
       <SectionTitle id="experience" label="Expérience" seed={101} />
       <article className="job">
         <header className="job__head">
-          <h3 className="job__role">{e.role}</h3>
+          <h3 className="job__role" data-lines>{e.role}</h3>
           <p className="job__company">{e.company}</p>
           <p className="job__meta">
             {e.place}, <time>{e.start}</time> à <time>{e.end}</time>
@@ -81,8 +82,10 @@ export function Experience() {
 
         <div className="job__grid">
           <div className="job__intro">
-            <p className="lead">{e.intro}</p>
-            <ul className="tags" aria-label="Stack utilisée">
+            <p className="lead" data-lines>
+              {e.intro}
+            </p>
+            <ul className="tags" aria-label="Stack utilisée" data-rise>
               {e.stack.map((t) => (
                 <li key={t}>{t}</li>
               ))}
@@ -92,13 +95,12 @@ export function Experience() {
         </div>
 
         <div className="highlights">
-          {e.highlights.map((h, i) => (
+          {e.highlights.map((h) => (
             <section
               key={h.title}
               className="highlight"
               aria-label={h.title}
-              data-reveal="dissolve"
-              style={{ '--i': i % 2 } as CSSProperties}
+              data-rise
             >
               <p className="highlight__figure">
                 <strong>
@@ -116,7 +118,7 @@ export function Experience() {
           ))}
         </div>
 
-        <aside className="rex" aria-label="Retour d'expérience" data-reveal="wipe">
+        <aside className="rex" aria-label="Retour d'expérience" data-rise>
           <h4 className="rex__title">Retour d'expérience</h4>
           <p>{e.rex}</p>
         </aside>

@@ -121,7 +121,7 @@ export function ContactForm() {
 
   return (
     <Peek className="contact-form-wrap" side="right" force={peek} mood={mood}>
-      <form ref={formRef} className="contact-form" onSubmit={onSubmit} noValidate aria-describedby={id('hint')} data-reveal="dissolve">
+      <form ref={formRef} className="contact-form" onSubmit={onSubmit} noValidate aria-describedby={id('hint')}>
         <h3 className="contact-form__title">Écrire un message</h3>
         <p className="contact-form__hint" id={id('hint')}>
           Tous les champs sont obligatoires, sauf l'objet.

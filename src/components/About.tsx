@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react'
+import { Edge } from './Edge.tsx'
 import { SectionTitle } from './SectionTitle.tsx'
 
 const steps = [
@@ -28,19 +28,20 @@ const steps = [
 export function About() {
   return (
     <section className="section" aria-labelledby="a-propos">
+      <Edge seed={13} />
       <SectionTitle id="a-propos" label="À propos" pixel="Qui suis-je" seed={100} />
       <div className="about">
         <div className="about__text">
-          <p className="lead">
+          <p className="lead" data-lines>
             Je m'appelle Ethan, je vis à Rouen et je suis développeur full stack. J'aime les outils petits et précis, le code qui
             se relit facilement, et tout ce qui a un peu de pixel art dedans.
           </p>
-          <p>
+          <p data-lines>
             Le jeu vidéo m'a appris à penser en systèmes : un inventaire, une jauge de vie ou un calendrier en jeu, c'est un modèle
             de données, des règles et une interface qui doit réagir tout de suite. Je retrouve les mêmes questions dans les
             applications métier, avec de vrais utilisateurs en face.
           </p>
-          <dl className="sheet" aria-label="Fiche résumé" data-reveal="dissolve">
+          <dl className="sheet" aria-label="Fiche résumé" data-rise>
             <div>
               <dt>Classe</dt>
               <dd>Développeur Full Stack</dd>
@@ -63,12 +64,11 @@ export function About() {
         <div className="about__path">
           <h3 className="h3">Parcours</h3>
           <ol className="timeline">
-            {steps.map((s, i) => (
+            {steps.map((s) => (
               <li
                 key={s.title}
                 className={s.next ? 'timeline__step timeline__step--next' : 'timeline__step'}
-                data-reveal="step"
-                style={{ '--i': i } as CSSProperties}
+                data-rise
               >
                 <p className="timeline__when">{s.when}</p>
                 <h4 className="timeline__title">{s.title}</h4>

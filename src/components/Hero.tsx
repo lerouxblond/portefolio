@@ -1,20 +1,61 @@
-import type { CSSProperties } from 'react'
-import sceneLight from '../assets/scene-light.svg'
-import sceneDark from '../assets/scene-dark.svg'
+import { useEffect, useRef, type CSSProperties } from 'react'
+import darkFar from '../assets/scene-dark-far.svg'
+import darkMid from '../assets/scene-dark-mid.svg'
+import darkNear from '../assets/scene-dark-near.svg'
+import darkSky from '../assets/scene-dark-sky.svg'
+import lightFar from '../assets/scene-light-far.svg'
+import lightMid from '../assets/scene-light-mid.svg'
+import lightNear from '../assets/scene-light-near.svg'
+import lightSky from '../assets/scene-light-sky.svg'
 import { site } from '../data/site.ts'
 import { HeroFox } from './HeroFox.tsx'
 import { PixelText } from './Pixel.tsx'
 
 const GREETING = "> salut, moi c'est ethan"
 
-export function Hero() {
+/** Calques de profondeur de la scène (tools/generate.mjs) : ciel, forêt lointaine, forêt proche, sol + renard. */
+const LAYERS = [
+  { depth: 'sky', light: lightSky, dark: darkSky },
+  { depth: 'far', light: lightFar, dark: darkFar },
+  { depth: 'mid', light: lightMid, dark: darkMid },
+  { depth: 'near', light: lightNear, dark: darkNear },
+] as const
+
+function SceneImg({ light, dark }: { light: string; dark: string }) {
   return (
-    <section className="hero" aria-labelledby="hero-title">
-      <div className="hero__scene" aria-hidden="true">
-        <img className="only-light" src={sceneLight} alt="" width="1200" height="420" />
-        <img className="only-dark" src={sceneDark} alt="" width="1200" height="420" />
+    <>
+      <img className="only-light" src={light} alt="" width="1200" height="420" />
+      <img className="only-dark" src={dark} alt="" width="1200" height="420" />
+    </>
+  )
+}
+
+export function Hero() {
+  const ref = useRef<HTMLElement>(null)
+
+  // Hors écran (y compris recouvert par la section suivante à la fin de la plongée) :
+  // les calques animés ne sont plus peints et les animations CSS se mettent en pause.
+  useEffect(() => {
+    const el = ref.current
+    if (!el || !('IntersectionObserver' in window)) return
+    const io = new IntersectionObserver(([e]) => el.classList.toggle('is-offscreen', !e.isIntersecting), {
+      rootMargin: '-64px 0px 0px 0px',
+    })
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
+  return (
+    <section ref={ref} className="hero" aria-labelledby="hero-title">
+      {/* Le renard (bouton) vit sur le calque proche : pas d'aria-hidden sur la scène, les images ont alt="". */}
+      <div className="hero__scene">
+        {LAYERS.map((l) => (
+          <div key={l.depth} className={`hero__layer hero__layer--${l.depth}`} data-depth={l.depth}>
+            <SceneImg light={l.light} dark={l.dark} />
+            {l.depth === 'near' && <HeroFox />}
+          </div>
+        ))}
       </div>
-      <HeroFox />
 
       <div className="hero__content">
         <p className="hero__term">

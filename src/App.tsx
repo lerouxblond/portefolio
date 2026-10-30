@@ -5,15 +5,18 @@ import { Header } from './components/Header.tsx'
 import { Hero } from './components/Hero.tsx'
 import { Projects } from './components/Projects.tsx'
 import { Stack } from './components/Stack.tsx'
-import { TrotLane } from './components/TrotLane.tsx'
+import { Intro } from './components/Intro.tsx'
 import { useScrollReveal } from './lib/motion.ts'
+import { useScenes } from './lib/scenes.ts'
 import { useTheme } from './lib/useTheme.ts'
 
 export default function App() {
   const { theme, toggle } = useTheme()
   useScrollReveal()
+  useScenes()
   return (
     <>
+      <Intro />
       <a className="skip" href="#main">
         Aller au contenu
       </a>
@@ -22,10 +25,8 @@ export default function App() {
         <Hero />
         <div className="page">
           <About />
-          <TrotLane direction="left" />
           <Experience />
           <Projects />
-          <TrotLane direction="right" />
           <Stack />
           <Contact />
         </div>

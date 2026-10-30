@@ -2,6 +2,9 @@
 // Adapté de lerouxblond/tools/generate.mjs (bannière du profil GitHub) : même forêt,
 // même ciel, même renard — mais sans texte, pour laisser le titre en HTML accessible.
 //
+// La scène est aussi exportée en 4 calques de profondeur (ciel, forêt lointaine, forêt proche, sol)
+// pour la « plongée » au défilement : scene-<thème>-<calque>.svg, superposés ils redonnent la scène.
+//
 // Usage : npm run generate:svg   (Node >= 22.18, qui sait importer du .ts)
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
@@ -111,7 +114,16 @@ function scene(themeName) {
   const W = 1200, H = 420, s = 6
   const cols = W / s, groundRow = 66 // sol à y = 396
   const rand = rng(themeName === 'dark' ? 7 : 11)
+  // Un tampon par calque ; `body` et `css` pointent sur le calque en cours de dessin.
+  const layers = { sky: { body: '', css: '' }, far: { body: '', css: '' }, mid: { body: '', css: '' }, near: { body: '', css: '' } }
   let body = '', css = ''
+  let current = 'sky'
+  const to = (name) => {
+    layers[current].body += body
+    layers[current].css += css
+    body = css = ''
+    current = name
+  }
 
   const band = H / T.sky.length
   T.sky.forEach((color, i) => {
@@ -155,8 +167,11 @@ function scene(themeName) {
     if (x < 860) return 13
     return 26
   }
+  to('far')
   body += cellsPath(forest(rand, groundRow, cols, (c) => edge(c) + 4), 0, 0, s, T.treesBack)
+  to('mid')
   body += cellsPath(forest(rand, groundRow, cols, (c) => edge(c) * 0.75), 0, 0, s, T.treesFront)
+  to('near')
   body += `<rect y="${groundRow * s}" width="${W}" height="${H - groundRow * s}" fill="${T.ground}"/>`
 
   if (themeName === 'dark') {
@@ -186,19 +201,29 @@ function scene(themeName) {
   body += `<g opacity="0" style="animation:blinkShut 5s infinite">${cellsPath(FOX_EYES_CLOSED, fx, fy, s, T.fox.E)}</g>`
 
   }
+  to('near')
 
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMaxYMax slice" shape-rendering="crispEdges">
-<style>${css}
+  const svg = (b, c) => `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMaxYMax slice" shape-rendering="crispEdges">
+<style>${c}
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }</style>
-${body}
+${b}
 </svg>
 `
+  const all = Object.values(layers)
+  return {
+    full: svg(all.map((l) => l.body).join(''), all.map((l) => l.css).join('')),
+    layers: Object.fromEntries(Object.entries(layers).map(([k, l]) => [k, svg(l.body, l.css)])),
+  }
 }
 
 for (const theme of Object.keys(THEMES)) {
-  const content = scene(theme)
-  writeFileSync(join(OUT, `scene-${theme}.svg`), content)
-  console.log(`  scene-${theme}.svg  ${(content.length / 1024).toFixed(1)} KB`)
+  const { full, layers } = scene(theme)
+  writeFileSync(join(OUT, `scene-${theme}.svg`), full)
+  console.log(`  scene-${theme}.svg  ${(full.length / 1024).toFixed(1)} KB`)
+  for (const [name, content] of Object.entries(layers)) {
+    writeFileSync(join(OUT, `scene-${theme}-${name}.svg`), content)
+    console.log(`  scene-${theme}-${name}.svg  ${(content.length / 1024).toFixed(1)} KB`)
+  }
 }
 
 // Favicon : tête du renard (17 premières lignes du sprite assis).

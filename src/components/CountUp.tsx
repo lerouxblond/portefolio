@@ -6,7 +6,7 @@ import { useInView, useReducedMotion } from '../lib/motion.ts'
  * « 459 → 0 » décompte de 459 à 0, « 92 » compte de 0 à 92, le reste s'affiche tel quel.
  * Le lecteur d'écran lit toujours la valeur finale ; la largeur est réservée (pas de saut de mise en page).
  */
-export function CountUp({ value, duration = 1400 }: { value: string; duration?: number }) {
+export function CountUp({ value, duration = 1600 }: { value: string; duration?: number }) {
   const ref = useRef<HTMLSpanElement>(null)
   const inView = useInView(ref, { once: true, threshold: 0.6 })
   const reduced = useReducedMotion()
@@ -29,8 +29,8 @@ export function CountUp({ value, duration = 1400 }: { value: string; duration?: 
     const t0 = performance.now()
     const tick = (t: number) => {
       const k = Math.min(1, (t - t0) / duration)
-      // Décélération en paliers : le compteur « cliquette » comme un compteur de jeu.
-      const eased = 1 - Math.pow(1 - k, 3)
+      // « Deux vitesses » : le chiffre est du texte, il décélère en douceur (power2.out).
+      const eased = 1 - Math.pow(1 - k, 2)
       setN(Math.round(from + (to - from) * eased))
       if (k < 1) raf = requestAnimationFrame(tick)
     }

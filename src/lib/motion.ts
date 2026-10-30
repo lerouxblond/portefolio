@@ -43,7 +43,8 @@ export function useInView<T extends Element>(ref: RefObject<T | null>, { once = 
 }
 
 /**
- * Apparitions au défilement : chaque élément [data-reveal] reçoit data-shown à son entrée à l'écran.
+ * Apparitions pixel au défilement (titres de section) : chaque élément [data-reveal] reçoit data-shown
+ * à son entrée à l'écran. Les blocs et les textes, eux, sont révélés par GSAP (src/lib/scenes.ts).
  * Le masquage initial n'existe que sous html.reveal-on, posé ici : sans JS ou avec « réduire les
  * animations », tout reste visible d'emblée.
  */
@@ -51,11 +52,18 @@ export function useScrollReveal() {
   useEffect(() => {
     if (prefersReducedMotion() || !('IntersectionObserver' in window)) return
     const root = document.documentElement
+    const timers: number[] = []
+    // Une fois l'apparition jouée, on retire les animations (des centaines de pixels animés un par un
+    // coûtent cher au compositeur à chaque image, même terminées).
+    const show = (el: HTMLElement) => {
+      el.dataset.shown = ''
+      timers.push(window.setTimeout(() => (el.dataset.done = ''), 2200))
+    }
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
           if (!e.isIntersecting) continue
-          ;(e.target as HTMLElement).dataset.shown = ''
+          show(e.target as HTMLElement)
           io.unobserve(e.target)
         }
       },
@@ -66,12 +74,13 @@ export function useScrollReveal() {
     const vh = window.innerHeight
     els.forEach((el) => {
       const r = el.getBoundingClientRect()
-      if (r.top < vh * 0.92 && r.bottom > 0) el.dataset.shown = ''
+      if (r.top < vh * 0.92 && r.bottom > 0) show(el)
       else io.observe(el)
     })
     root.classList.add('reveal-on')
     return () => {
       io.disconnect()
+      timers.forEach((t) => window.clearTimeout(t))
       root.classList.remove('reveal-on')
     }
   }, [])

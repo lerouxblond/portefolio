@@ -283,66 +283,15 @@
   }
 }
 
-/* ─── Apparitions au défilement (uniquement sous html.reveal-on) ─────── */
-[data-reveal='dissolve'] {
-  position: relative;
-}
-/* Dissolution en trame de pixels : plein, damier, trame clairsemée, rien. */
-.reveal-on [data-reveal='dissolve']::after {
-  content: '';
-  position: absolute;
-  inset: calc(-1 * var(--px) - 1px);
-  z-index: 5;
-  pointer-events: none;
-  background: var(--bg);
-}
-.reveal-on [data-reveal='dissolve'][data-shown]::after {
-  animation: dissolve 0.5s step-end calc(var(--i, 0) * 140ms) forwards;
-}
-@keyframes dissolve {
-  0% { background: var(--bg); }
-  25% { background: conic-gradient(var(--bg) 25%, transparent 0 50%, var(--bg) 0 75%, transparent 0) 0 0 / 8px 8px; }
-  50% { background: conic-gradient(var(--bg) 25%, transparent 0) 0 0 / 8px 8px; }
-  75% { background: conic-gradient(var(--bg) 25%, transparent 0) 4px 4px / 16px 16px; }
-  100% { background: transparent; visibility: hidden; }
-}
-/* On masque les enfants, jamais l'élément observé : un élément entièrement rogné par clip-path
-   n'intersecte plus rien et l'IntersectionObserver ne se déclencherait jamais. */
-.reveal-on [data-reveal='wipe']:not([data-shown]) > * {
-  clip-path: inset(0 100% 0 0);
-}
-.reveal-on [data-reveal='wipe'][data-shown] > * {
-  animation: wipe 0.5s steps(8) calc(var(--n, 0) * 90ms) both;
-}
-.reveal-on [data-reveal='wipe'][data-shown] > :nth-child(2) {
-  --n: 1;
-}
-.reveal-on [data-reveal='wipe'][data-shown] > :nth-child(n + 3) {
-  --n: 2;
-}
-/* Marges négatives : l'état final ne rogne pas les cadres pixel (box-shadow) des boutons. */
+/* ─── Apparitions au défilement ──────────────────────────────────────── */
+/* Les blocs et les textes sont révélés par GSAP (src/lib/scenes.ts). Restent ici, sous html.reveal-on,
+   les éléments pixel en paliers : titres de section tapés et remerciements du pied de page. */
 @keyframes wipe {
   from {
     clip-path: inset(-16px 100% -16px -16px);
   }
   to {
     clip-path: inset(-16px -16px -16px -16px);
-  }
-}
-.reveal-on [data-reveal='step']:not([data-shown]) {
-  opacity: 0;
-}
-.reveal-on [data-reveal='step'][data-shown] {
-  animation: step-in 0.36s steps(3) calc(var(--i, 0) * 120ms) both;
-}
-@keyframes step-in {
-  from {
-    opacity: 0;
-    transform: translateX(-12px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
   }
 }
 
@@ -364,6 +313,11 @@
 }
 .reveal-on .section-title[data-shown] .section-title__paw {
   animation: stamp 0.3s steps(3) both;
+}
+.reveal-on .section-title[data-done] .trail rect,
+.reveal-on .section-title[data-done] .section-title__px,
+.reveal-on .section-title[data-done] .section-title__paw {
+  animation: none;
 }
 @keyframes pixel-pop {
   from {
@@ -406,19 +360,15 @@
 .highlight {
   transition: transform 0.12s steps(2);
 }
+/* Survol : la carte monte (transform), le cadre d'accent s'allume en opacité (scroll.css). */
 .project-slot:hover > .project,
 .highlight:hover {
-  --frame: var(--accent-soft);
   transform: translateY(calc(-1 * var(--px)));
-}
-.project-slot:hover > .project--la-console {
-  --frame: var(--accent);
 }
 .tags li {
   transition: transform 0.1s steps(2);
 }
 .tags li:hover {
-  --frame: var(--accent);
   transform: translateY(-2px);
 }
 .stack__icon:hover img {

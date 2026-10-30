@@ -3,22 +3,24 @@ import { site } from '../data/site.ts'
 import { useInView, useReducedMotion } from '../lib/motion.ts'
 import { ContactForm } from './ContactForm.tsx'
 import { PixelText, SleepingFox } from './Pixel.tsx'
+import { Edge } from './Edge.tsx'
 import { SectionTitle } from './SectionTitle.tsx'
 
 export function Contact() {
   return (
     <section className="section" aria-labelledby="contact">
+      <Edge seed={61} />
       <SectionTitle id="contact" label="Contact" pixel="Me contacter" seed={105} />
       <div className="contact">
-        <div className="contact__aside" data-reveal="wipe">
-          <p className="lead">
+        <div className="contact__aside">
+          <p className="lead" data-lines>
             Vous recrutez un alternant en Bac+5 full stack, ou vous voulez parler d'un projet ? Laissez-moi un message ici, ou
             écrivez-moi directement.
           </p>
-          <a className="contact__mail" href={`mailto:${site.email}`}>
+          <a className="contact__mail" data-rise href={`mailto:${site.email}`}>
             {site.email}
           </a>
-          <ul className="contact__links">
+          <ul className="contact__links" data-rise>
             <li>
               <a className="btn btn--primary" href={site.cv} download>
                 Télécharger le CV
@@ -57,6 +59,7 @@ export function Footer() {
 
   return (
     <footer className="site-footer">
+      <Edge seed={83} />
       <div className="site-footer__scene" ref={ref} data-awake={awake ? '' : undefined}>
         <div className="sleeper" aria-hidden="true">
           <span className="zz">
