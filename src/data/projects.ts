@@ -35,7 +35,7 @@ export const projects: Project[] = [
     context: 'Alternance',
     status: 'En production',
     summary:
-      "L'application web de gestion interne d'Eureka Fripe : 38 modules (CRM, stock, messagerie, analytics…) développés à trois alternants, en sprints de deux semaines avec revue de code.",
+      "L'application web de gestion interne d'Eureka Fripe : 38 modules (CRM, stock, messagerie, analytics…) développés à trois alternants, avec une méthode agile maison et de la revue de code.",
     points: [
       "Socle d'interface en Atomic Design : tokens CSS, 3 thèmes, migration de 911 imports sans régression.",
       'Module Stock de bout en bout, du recueil du besoin à la mise en production.',

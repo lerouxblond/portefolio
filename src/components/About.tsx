@@ -15,7 +15,7 @@ const steps = [
   {
     when: '2025 – 2026',
     title: 'Alternance chez Eureka Fripe',
-    text: "Un an à livrer des outils web utilisés au quotidien par les équipes : interface, base de données, tests et mise en production.",
+    text: "Plus d'un an à livrer des outils web utilisés au quotidien par les équipes : interface, base de données, tests et mise en production.",
   },
   {
     when: 'La suite',
