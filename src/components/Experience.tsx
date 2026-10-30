@@ -105,6 +105,11 @@ export function Experience() {
             </section>
           ))}
         </div>
+
+        <aside className="rex" aria-label="Retour d'expérience">
+          <h4 className="rex__title">Retour d'expérience</h4>
+          <p>{e.rex}</p>
+        </aside>
       </article>
     </section>
   )

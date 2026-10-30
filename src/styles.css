@@ -798,6 +798,16 @@ ol {
   gap: 28px;
   margin-top: 48px;
 }
+.rex {
+  margin-top: 28px;
+  padding: 20px 24px;
+  background: var(--surface);
+  border-left: 6px solid var(--accent);
+}
+.rex__title {
+  margin-bottom: 6px;
+  color: var(--accent-ink);
+}
 .highlight {
   margin: var(--px);
   padding: 22px 24px 24px;

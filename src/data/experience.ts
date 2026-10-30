@@ -10,9 +10,11 @@ export const experience = {
   company: "Eureka Fripe — Les Chiffonniers d'Eureka Fripe",
   place: 'Rouen',
   start: 'sept. 2025',
-  end: 'sept. 2026',
+  end: 'nov. 2026',
   intro:
-    "J'ai travaillé sur « La Console », l'application web de gestion interne de l'entreprise : 38 modules (CRM, stock, messagerie, analytics…) construits par une équipe de trois alternants, en sprints de deux semaines avec revue de code systématique. Environ 440 commits en un an.",
+    "« La Console » est l'application web interne qui remplace tableurs et e-mails pour toute l'entreprise (commerciaux, entrepôt, direction) : 38 modules dont le CRM, le stock et les arrivages, une messagerie chiffrée de bout en bout, un wiki, des tickets et des analytics. Autour gravitent une CI/CD auto-hébergée écrite en Go, des services de newsletter et d'e-mails, et une PWA installable sur mobile. Une équipe de trois alternants, une méthode agile maison (sprints, kanban) et de la revue de code.",
+  rex:
+    "Faire évoluer une application utilisée chaque jour par toute l'entreprise, sans service informatique en appui, m'a appris à partir des besoins des utilisateurs, à livrer par petites étapes sans casser l'existant et à documenter mon travail (notes à la direction, guides utilisateurs, conventions d'équipe) pour que toute l'équipe puisse s'en servir.",
   highlights: [
     {
       title: "Design system et socle d'interface",
