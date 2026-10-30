@@ -115,3 +115,60 @@ export const PAW = [
   '.OOOOOOO.',
   '..OO.OO..',
 ]
+
+// ─── Ajouts portfolio (même palette, même échelle de pixels) ───────────────
+
+// Renard de profil qui trotte, tourné vers la droite — 24 × 14.
+// Le corps est commun ; seules les 3 dernières lignes (pattes) changent.
+export const FOX_TROT_BODY = [
+  '................K..K....',
+  '...............KOKKOK...',
+  '..............KOOOOOOOK.',
+  '..............KOOOOOEOOK',
+  '..KK.........KOOOOOOWWWN',
+  '.KOOK...KKKKKOOOOOWWWWK.',
+  'KOOOOOKOOOOOOOOOOOWWWK..',
+  'KWOOOOOOOOOOOOOOOOWWK...',
+  'KWWOOODOOOOOOOOOOOWK....',
+  '.KWWKKDOOOOOOOOOOOK.....',
+  '......KDOOOOOOOOODK.....',
+]
+
+// Cycle de trot : A (pattes proches écartées), B (passage), C (pattes lointaines écartées), B.
+// P = pattes du côté visible (chaussettes noires), K = pattes du côté opposé.
+export const FOX_TROT_LEGS = [
+  ['.......PP......KPP......', '......PPKK....KK.PP.....', '.....PP..KK..KK...PP....'],
+  ['.......PP......PP.......', '.......PPK.....PPK......', '.......PPK.....PPK......'],
+  ['.......PP......PPK......', '......KKPP....PP.KK.....', '.....KK..PP..PP...KK....'],
+  ['.......PP......PP.......', '.......PPK.....PPK......', '.......PPK.....PPK......'],
+]
+
+/** Tête du renard assis (oreilles → joues), pour les apparitions derrière les cartes. */
+export const FOX_HEAD = FOX_SITTING.slice(0, 17)
+
+/** Pixels des deux yeux du renard assis (2 × 2 chacun). */
+export const FOX_EYES: [number, number][] = [
+  [4, 8], [5, 8], [4, 9], [5, 9],
+  [14, 8], [15, 8], [14, 9], [15, 9],
+]
+
+/** Yeux « contents » en accent circonflexe (^ ^). */
+export const FOX_EYES_HAPPY: [number, number][] = [
+  [3, 9], [4, 8], [5, 8], [6, 9],
+  [13, 9], [14, 8], [15, 8], [16, 9],
+]
+
+/** Yeux tristes (petits, baissés) + une larme. */
+export const FOX_EYES_SAD: [number, number][] = [
+  [3, 8], [4, 9], [5, 9],
+  [16, 8], [15, 9], [14, 9],
+]
+export const FOX_TEAR: [number, number][] = [[5, 10], [5, 11]]
+
+/** Pattes posées sur un bord (4 × 3). */
+export const PAW_GRIP = ['.KK.', 'KOOK', 'KOOK']
+
+/** Yeux ouverts du renard endormi (au réveil) : la ligne fermée devient un bloc 2 × 2. */
+export const FOX_SLEEPING_AWAKE_EYES: [number, number][] = [
+  [2, 4], [3, 4], [2, 5], [3, 5],
+]

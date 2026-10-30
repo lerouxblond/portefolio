@@ -1,4 +1,5 @@
 import { projects, type Project } from '../data/projects.ts'
+import { Peek } from './Peek.tsx'
 import { SectionTitle } from './SectionTitle.tsx'
 
 function Lock() {
@@ -24,9 +25,10 @@ function RepoLink({ href, name }: { href?: string; name: string }) {
   )
 }
 
-function ProjectCard({ p }: { p: Project }) {
+function ProjectCard({ p, index }: { p: Project; index: number }) {
   return (
-    <article className={`project project--${p.size} project--${p.id}`} aria-labelledby={`p-${p.id}`}>
+    <Peek className={`project-slot project-slot--${p.size}`} side={index % 2 ? 'left' : 'right'} autoPeek={2600} autoDelay={900}>
+    <article className={`project project--${p.id}`} aria-labelledby={`p-${p.id}`} data-reveal="dissolve">
       <header className="project__head">
         <p className="project__context">
           {p.context}
@@ -64,6 +66,7 @@ function ProjectCard({ p }: { p: Project }) {
         {p.id !== 'unity' && <RepoLink href={p.repo} name={p.title} />}
       </footer>
     </article>
+    </Peek>
   )
 }
 
@@ -71,12 +74,12 @@ export function Projects() {
   return (
     <section className="section" aria-labelledby="projets">
       <SectionTitle id="projets" label="Projets" seed={102} />
-      <p className="section__intro">
+      <p className="section__intro" data-reveal="step">
         Des outils pro, des projets perso autour de Dofus et de Windows, et les jeux Unity par lesquels j'ai commencé.
       </p>
       <div className="projects">
-        {projects.map((p) => (
-          <ProjectCard key={p.id} p={p} />
+        {projects.map((p, i) => (
+          <ProjectCard key={p.id} p={p} index={i} />
         ))}
       </div>
     </section>

@@ -1,3 +1,4 @@
+import type { CSSProperties } from 'react'
 import { SectionTitle } from './SectionTitle.tsx'
 
 const steps = [
@@ -39,7 +40,7 @@ export function About() {
             de données, des règles et une interface qui doit réagir tout de suite. Je retrouve les mêmes questions dans les
             applications métier, avec de vrais utilisateurs en face.
           </p>
-          <dl className="sheet" aria-label="Fiche résumé">
+          <dl className="sheet" aria-label="Fiche résumé" data-reveal="dissolve">
             <div>
               <dt>Classe</dt>
               <dd>Développeur Full Stack</dd>
@@ -62,8 +63,13 @@ export function About() {
         <div className="about__path">
           <h3 className="h3">Parcours</h3>
           <ol className="timeline">
-            {steps.map((s) => (
-              <li key={s.title} className={s.next ? 'timeline__step timeline__step--next' : 'timeline__step'}>
+            {steps.map((s, i) => (
+              <li
+                key={s.title}
+                className={s.next ? 'timeline__step timeline__step--next' : 'timeline__step'}
+                data-reveal="step"
+                style={{ '--i': i } as CSSProperties}
+              >
                 <p className="timeline__when">{s.when}</p>
                 <h4 className="timeline__title">{s.title}</h4>
                 <p className="timeline__text">{s.text}</p>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, type CSSProperties } from 'react'
 import { Paw, PixelText } from './Pixel.tsx'
 
 function rng(seed: number) {
@@ -31,7 +31,7 @@ function Trail({ seed }: { seed: number }) {
   return (
     <svg className="trail" viewBox={`0 0 ${TRAIL_COLS} 4`} preserveAspectRatio="xMaxYMid slice" shapeRendering="crispEdges" aria-hidden="true" focusable="false">
       {pixels.map((p) => (
-        <rect key={`${p.x}-${p.y}`} x={p.x} y={p.y} width="1" height="1" fill={p.fill} />
+        <rect key={`${p.x}-${p.y}`} x={p.x} y={p.y} width="1" height="1" fill={p.fill} style={{ '--d': `${p.x * 9}ms` } as CSSProperties} />
       ))}
     </svg>
   )
@@ -39,10 +39,12 @@ function Trail({ seed }: { seed: number }) {
 
 type Props = { id: string; label: string; pixel?: string; seed: number }
 
-/** Titre de section : vrai <h2> (texte lu) + bandeau pixel décoratif. */
+/** Titre de section : vrai <h2> (texte lu) + bandeau pixel décoratif.
+ * À l'apparition : le bandeau s'ouvre, le libellé se tape lettre par lettre, la traînée se pose pixel par pixel.
+  */
 export function SectionTitle({ id, label, pixel, seed }: Props) {
   return (
-    <div className="section-title">
+    <div className="section-title" data-reveal="title">
       <Paw className="section-title__paw" />
       <h2 id={id} className="section-title__h">
         <span className="sr-only">{label}</span>

@@ -1,4 +1,6 @@
+import type { CSSProperties } from 'react'
 import { experience } from '../data/experience.ts'
+import { CountUp } from './CountUp.tsx'
 import { SectionTitle } from './SectionTitle.tsx'
 
 const MODULES = ['Tableau de bord', 'CRM', 'Stock', 'Messagerie', 'Analytics', 'Newsletter']
@@ -6,7 +8,7 @@ const MODULES = ['Tableau de bord', 'CRM', 'Stock', 'Messagerie', 'Analytics', '
 /** Illustration schématique de La Console (outil interne : ni capture ni code réels). */
 function ConsoleIllustration() {
   return (
-    <figure className="console">
+    <figure className="console" data-reveal="dissolve">
       <div className="console__window" aria-hidden="true">
         <div className="console__bar">
           <span />
@@ -90,10 +92,18 @@ export function Experience() {
         </div>
 
         <div className="highlights">
-          {e.highlights.map((h) => (
-            <section key={h.title} className="highlight" aria-label={h.title}>
+          {e.highlights.map((h, i) => (
+            <section
+              key={h.title}
+              className="highlight"
+              aria-label={h.title}
+              data-reveal="dissolve"
+              style={{ '--i': i % 2 } as CSSProperties}
+            >
               <p className="highlight__figure">
-                <strong>{h.figure.value}</strong>
+                <strong>
+                  <CountUp value={h.figure.value} />
+                </strong>
                 <span>{h.figure.label}</span>
               </p>
               <h4 className="highlight__title">{h.title}</h4>
@@ -106,7 +116,7 @@ export function Experience() {
           ))}
         </div>
 
-        <aside className="rex" aria-label="Retour d'expérience">
+        <aside className="rex" aria-label="Retour d'expérience" data-reveal="wipe">
           <h4 className="rex__title">Retour d'expérience</h4>
           <p>{e.rex}</p>
         </aside>

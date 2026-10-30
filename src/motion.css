@@ -1,0 +1,651 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Phase 2 : le renard prend vie, apparitions au défilement, formulaire.
+   Règles de mouvement : transform / opacity (ou clip-path) en paliers
+   (steps), déplacements en pixels entiers. Tout est coupé par
+   prefers-reduced-motion (bloc global en fin de styles.css + fin de ce fichier).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --error: #9b1c1c;
+}
+:root[data-theme='dark'] {
+  --error: #ff8a7a;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --error: #ff8a7a;
+  }
+}
+
+/* ─── Renard du hero ─────────────────────────────────────────────────── */
+.hero__content {
+  pointer-events: none;
+}
+.hero__content > * {
+  pointer-events: auto;
+}
+/* Même boîte que l'image de fond : le viewBox tombe exactement sur la scène. */
+.hero-fox {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1200 / 420;
+  min-height: 320px;
+  max-width: none;
+  overflow: visible;
+  pointer-events: none;
+}
+.hero-fox__hit {
+  pointer-events: auto;
+  cursor: pointer;
+  outline: none;
+}
+.hero-fox__hit:focus-visible .hero-fox__body > rect {
+  stroke: var(--focus);
+  stroke-width: 0.5;
+  stroke-dasharray: 1 1;
+}
+.hero-fox__tail {
+  animation-duration: 3s;
+  animation-timing-function: step-end;
+  animation-iteration-count: infinite;
+}
+.hero-fox__tail--0 {
+  animation-name: fox-tail-0;
+}
+.hero-fox__tail--1 {
+  opacity: 0;
+  animation-name: fox-tail-1;
+}
+.hero-fox__tail--2 {
+  opacity: 0;
+  animation-name: fox-tail-2;
+}
+.hero-fox__hit:hover .hero-fox__tail {
+  animation-duration: 1.2s;
+}
+@keyframes fox-tail-0 {
+  0% { opacity: 1; }
+  33% { opacity: 0; }
+  50% { opacity: 1; }
+  83% { opacity: 0; }
+}
+@keyframes fox-tail-1 {
+  0% { opacity: 0; }
+  33% { opacity: 1; }
+  50% { opacity: 0; }
+}
+@keyframes fox-tail-2 {
+  0% { opacity: 0; }
+  83% { opacity: 1; }
+}
+.hero-fox__open {
+  animation: fox-blink-open 5s step-end infinite;
+}
+.hero-fox__shut {
+  opacity: 0;
+  animation: fox-blink-shut 5s step-end infinite;
+}
+@keyframes fox-blink-open {
+  0% { opacity: 1; }
+  94% { opacity: 0; }
+  97% { opacity: 1; }
+}
+@keyframes fox-blink-shut {
+  0% { opacity: 0; }
+  94% { opacity: 1; }
+  97% { opacity: 0; }
+}
+/* Saut : unités = pixels du renard (le groupe parent est mis à l'échelle × 6). */
+.is-jumping .hero-fox__body {
+  animation: fox-jump 0.9s step-end;
+}
+@keyframes fox-jump {
+  0% { transform: translateY(0); }
+  8% { transform: translateY(-2px); }
+  16% { transform: translateY(-4px); }
+  26% { transform: translateY(-5px); }
+  38% { transform: translateY(-6px); }
+  50% { transform: translateY(-5px); }
+  60% { transform: translateY(-4px); }
+  68% { transform: translateY(-2px); }
+  76% { transform: translateY(0); }
+}
+.hero-fox__heart {
+  opacity: 0;
+  animation: fox-heart 0.9s step-end forwards;
+}
+@keyframes fox-heart {
+  0% { opacity: 0; }
+  20% { opacity: 1; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-1px); }
+  60% { opacity: 1; transform: translateY(-2px); }
+  80% { opacity: 1; transform: translateY(-3px); }
+  95% { opacity: 0; transform: translateY(-3px); }
+  100% { opacity: 0; }
+}
+.hero-fox.is-paused * {
+  animation-play-state: paused !important;
+}
+
+/* ─── Bande de trot entre deux sections ──────────────────────────────── */
+.trot-lane {
+  position: relative;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  height: 64px;
+  margin-top: clamp(48px, 7vw, 88px);
+  overflow: hidden;
+}
+.trot-lane__track {
+  position: absolute;
+  inset: 0;
+}
+.trot-lane--left .trot-lane__track {
+  transform: scaleX(-1);
+}
+.trot-lane__paw {
+  position: absolute;
+  width: 18px;
+  color: var(--accent);
+  opacity: 0;
+}
+.trot-lane__paw[data-on] {
+  opacity: 0.7;
+  animation: paw-in 0.24s steps(2) both;
+}
+@keyframes paw-in {
+  from {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+  to {
+    opacity: 0.7;
+    transform: none;
+  }
+}
+.trot-fox {
+  display: block;
+  width: 96px;
+  height: 56px;
+  overflow: hidden;
+}
+.trot-fox__sheet {
+  width: 384px;
+  max-width: none;
+  height: 56px;
+  animation: trot-frames 0.44s steps(4) infinite;
+}
+@keyframes trot-frames {
+  to {
+    transform: translateX(-384px);
+  }
+}
+.trot-lane__fox {
+  position: absolute;
+  left: -96px;
+  bottom: 2px;
+  animation: trot-move var(--dur) steps(var(--steps)) forwards;
+}
+@keyframes trot-move {
+  to {
+    transform: translateX(var(--dist));
+  }
+}
+
+/* ─── Tête qui dépasse derrière une carte ────────────────────────────── */
+.peek-wrap {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+}
+.peek-wrap > .project,
+.peek-wrap > .contact-form {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+}
+.peek {
+  position: absolute;
+  top: 2px;
+  z-index: 0;
+  width: 60px;
+  height: 36px;
+  pointer-events: none;
+  transform: translateY(0);
+  transition: transform 0.3s steps(4);
+}
+.peek__head {
+  width: 60px;
+  height: 36px;
+}
+.peek-wrap--right .peek {
+  right: 40px;
+}
+.peek-wrap--left .peek {
+  left: 40px;
+}
+.peek__paws {
+  position: absolute;
+  top: -5px;
+  z-index: 2;
+  display: flex;
+  gap: 56px;
+  pointer-events: none;
+  opacity: 0;
+}
+.peek__paws svg {
+  width: 12px;
+}
+.peek-wrap--right .peek__paws {
+  right: 30px;
+}
+.peek-wrap--left .peek__paws {
+  left: 30px;
+}
+.peek-wrap[data-peek='head'] .peek,
+.project-slot:hover .peek,
+.project-slot:focus-within .peek {
+  transform: translateY(-36px);
+}
+.peek-wrap[data-peek='head'] .peek__paws,
+.project-slot:hover .peek__paws,
+.project-slot:focus-within .peek__paws {
+  opacity: 1;
+  transition: opacity 0s 0.3s;
+}
+.peek-wrap[data-peek='ears'] .peek,
+.contact-form-wrap:not([data-peek]):focus-within .peek {
+  transform: translateY(-14px);
+}
+.fox-eyes {
+  animation: head-blink 4s step-end infinite;
+}
+@keyframes head-blink {
+  0% { opacity: 1; }
+  92% { opacity: 0; }
+  95% { opacity: 1; }
+}
+.peek-wrap:not([data-peek]):not(:hover):not(:focus-within) .fox-eyes {
+  animation-play-state: paused;
+}
+.fox-tear {
+  animation: tear 1.2s steps(3) infinite;
+}
+@keyframes tear {
+  to {
+    transform: translateY(3px);
+    opacity: 0;
+  }
+}
+
+/* ─── Apparitions au défilement (uniquement sous html.reveal-on) ─────── */
+[data-reveal='dissolve'] {
+  position: relative;
+}
+/* Dissolution en trame de pixels : plein, damier, trame clairsemée, rien. */
+.reveal-on [data-reveal='dissolve']::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--px) - 1px);
+  z-index: 5;
+  pointer-events: none;
+  background: var(--bg);
+}
+.reveal-on [data-reveal='dissolve'][data-shown]::after {
+  animation: dissolve 0.5s step-end calc(var(--i, 0) * 140ms) forwards;
+}
+@keyframes dissolve {
+  0% { background: var(--bg); }
+  25% { background: conic-gradient(var(--bg) 25%, transparent 0 50%, var(--bg) 0 75%, transparent 0) 0 0 / 8px 8px; }
+  50% { background: conic-gradient(var(--bg) 25%, transparent 0) 0 0 / 8px 8px; }
+  75% { background: conic-gradient(var(--bg) 25%, transparent 0) 4px 4px / 16px 16px; }
+  100% { background: transparent; visibility: hidden; }
+}
+/* On masque les enfants, jamais l'élément observé : un élément entièrement rogné par clip-path
+   n'intersecte plus rien et l'IntersectionObserver ne se déclencherait jamais. */
+.reveal-on [data-reveal='wipe']:not([data-shown]) > * {
+  clip-path: inset(0 100% 0 0);
+}
+.reveal-on [data-reveal='wipe'][data-shown] > * {
+  animation: wipe 0.5s steps(8) calc(var(--n, 0) * 90ms) both;
+}
+.reveal-on [data-reveal='wipe'][data-shown] > :nth-child(2) {
+  --n: 1;
+}
+.reveal-on [data-reveal='wipe'][data-shown] > :nth-child(n + 3) {
+  --n: 2;
+}
+/* Marges négatives : l'état final ne rogne pas les cadres pixel (box-shadow) des boutons. */
+@keyframes wipe {
+  from {
+    clip-path: inset(-16px 100% -16px -16px);
+  }
+  to {
+    clip-path: inset(-16px -16px -16px -16px);
+  }
+}
+.reveal-on [data-reveal='step']:not([data-shown]) {
+  opacity: 0;
+}
+.reveal-on [data-reveal='step'][data-shown] {
+  animation: step-in 0.36s steps(3) calc(var(--i, 0) * 120ms) both;
+}
+@keyframes step-in {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Titres de section : tampon de la patte, libellé tapé, traînée posée pixel par pixel. */
+.reveal-on .section-title:not([data-shown]) .section-title__paw {
+  opacity: 0;
+}
+.reveal-on .section-title:not([data-shown]) .section-title__px {
+  clip-path: inset(0 100% 0 0);
+}
+.reveal-on .section-title:not([data-shown]) .trail rect {
+  opacity: 0;
+}
+.reveal-on .section-title[data-shown] .section-title__px {
+  animation: wipe calc(var(--chars) * 55ms) steps(var(--chars)) 0.2s both;
+}
+.reveal-on .section-title[data-shown] .trail rect {
+  animation: pixel-pop 0.01s step-end calc(0.4s + var(--d)) both;
+}
+.reveal-on .section-title[data-shown] .section-title__paw {
+  animation: stamp 0.3s steps(3) both;
+}
+@keyframes pixel-pop {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes stamp {
+  from {
+    transform: scale(1.8) rotate(-12deg);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Un peu plus d'air entre les rangées de projets : la tête dépasse dans l'interligne. */
+.projects {
+  row-gap: 44px;
+}
+
+/* ─── Chiffres clés ──────────────────────────────────────────────────── */
+.count__num {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Survols ────────────────────────────────────────────────────────── */
+.btn {
+  transition: transform 0.12s steps(2);
+}
+.btn:hover {
+  transform: translateY(calc(-1 * var(--px)));
+}
+.btn:active {
+  transform: translateY(var(--px));
+}
+.project,
+.highlight {
+  transition: transform 0.12s steps(2);
+}
+.project-slot:hover > .project,
+.highlight:hover {
+  --frame: var(--accent-soft);
+  transform: translateY(calc(-1 * var(--px)));
+}
+.project-slot:hover > .project--la-console {
+  --frame: var(--accent);
+}
+.tags li {
+  transition: transform 0.1s steps(2);
+}
+.tags li:hover {
+  --frame: var(--accent);
+  transform: translateY(-2px);
+}
+.stack__icon:hover img {
+  animation: hop 0.4s steps(4);
+}
+@keyframes hop {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.timeline__step:hover::before {
+  background: var(--accent-soft);
+}
+
+/* ─── Formulaire de contact ──────────────────────────────────────────── */
+.contact__aside .lead {
+  max-width: 30em;
+}
+.contact-form-wrap {
+  margin-top: 28px;
+}
+.contact-form {
+  --frame: var(--edge);
+  margin: var(--px);
+  padding: clamp(20px, 3vw, 28px);
+  background: var(--card);
+  box-shadow:
+    0 calc(-1 * var(--px)) 0 var(--frame),
+    0 var(--px) 0 var(--frame),
+    calc(-1 * var(--px)) 0 0 var(--frame),
+    var(--px) 0 0 var(--frame);
+}
+.contact-form:focus-within {
+  --frame: var(--accent);
+}
+.contact-form__title {
+  font-size: var(--step-1);
+}
+.contact-form__hint {
+  margin: 4px 0 18px;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+}
+.contact-form__row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 20px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.field label {
+  font-weight: 700;
+}
+.field__opt {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+.field input,
+.field textarea {
+  width: 100%;
+  font: inherit;
+  color: var(--ink);
+  background: var(--bg);
+  border: var(--px) solid var(--edge);
+  border-radius: 0;
+  padding: 10px 12px;
+}
+.field textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+.field input:focus-visible,
+.field textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 0;
+  border-color: var(--focus);
+}
+.field [aria-invalid='true'] {
+  border-color: var(--error);
+}
+.field__error {
+  margin: 0;
+  color: var(--error);
+  font-size: var(--step--1);
+  font-weight: 700;
+}
+.field__error::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 8px;
+  background: var(--error);
+}
+.field__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.field__count {
+  flex: none;
+  font-size: var(--step--1);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+.field__count.is-near {
+  color: var(--error);
+  font-weight: 700;
+}
+.hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.contact-form__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px 20px;
+  margin-top: 8px;
+}
+button.btn {
+  font: inherit;
+  font-weight: 700;
+  border: 0;
+  cursor: pointer;
+}
+.btn:disabled {
+  cursor: progress;
+  opacity: 0.75;
+  transform: none;
+}
+.contact-form__status {
+  flex: 1 1 240px;
+}
+.status {
+  margin: 0;
+  padding: 8px 12px;
+  border-left: var(--px) solid var(--edge);
+  background: var(--bg-band);
+  font-size: 0.95rem;
+}
+.status--ok {
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.status--err {
+  border-color: var(--error);
+}
+.status--sending::after {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-left: 8px;
+  background: var(--accent);
+  animation: blink 0.6s steps(1) infinite;
+}
+
+/* ─── Pied de page : réveil du renard ────────────────────────────────── */
+.sleeper__alert {
+  position: absolute;
+  left: 20px;
+  top: 4px;
+  width: 15px;
+  color: var(--accent-ink);
+  opacity: 0;
+}
+[data-awake] .sleeper__alert {
+  opacity: 1;
+  animation: alert-pop 0.36s steps(3) both;
+}
+@keyframes alert-pop {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+[data-awake] .zz {
+  visibility: hidden;
+}
+.reveal-on .site-footer__scene:not([data-awake]) .site-footer__thanks-px {
+  clip-path: inset(0 100% 0 0);
+}
+.reveal-on .site-footer__scene[data-awake] .site-footer__thanks-px {
+  animation: wipe calc(var(--chars) * 45ms) steps(var(--chars)) 0.25s both;
+}
+
+@media (max-width: 720px) {
+  .contact-form__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .peek-wrap--right .peek {
+    right: 24px;
+  }
+  .peek-wrap--left .peek {
+    left: 24px;
+  }
+  .peek-wrap--right .peek__paws {
+    right: 14px;
+  }
+  .peek-wrap--left .peek__paws {
+    left: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .hero-fox__hit {
+    cursor: default;
+  }
+  .trot-lane__fox {
+    display: none;
+  }
+}

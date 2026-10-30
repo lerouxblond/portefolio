@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react'
 import sceneLight from '../assets/scene-light.svg'
 import sceneDark from '../assets/scene-dark.svg'
 import { site } from '../data/site.ts'
+import { HeroFox } from './HeroFox.tsx'
 import { PixelText } from './Pixel.tsx'
 
 const GREETING = "> salut, moi c'est ethan"
@@ -13,6 +14,7 @@ export function Hero() {
         <img className="only-light" src={sceneLight} alt="" width="1200" height="420" />
         <img className="only-dark" src={sceneDark} alt="" width="1200" height="420" />
       </div>
+      <HeroFox />
 
       <div className="hero__content">
         <p className="hero__term">

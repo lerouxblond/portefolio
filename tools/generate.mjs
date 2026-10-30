@@ -8,6 +8,7 @@ import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { FOX_SITTING, FOX_EYES_CLOSED, TAIL_FRAMES, TAIL_ANCHOR } from '../src/lib/sprites.ts'
 
+const WITH_FOX = false
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'src', 'assets')
 mkdirSync(OUT, { recursive: true })
 
@@ -166,7 +167,10 @@ function scene(themeName) {
     }
   }
 
-  // renard assis : queue animée, clignement des yeux
+  // Renard assis : désormais rendu en direct par src/components/HeroFox.tsx (mêmes coordonnées :
+  // x = 1010, y = 234, pixel = 6) pour cligner, suivre le curseur et sauter. Passer WITH_FOX à true
+  // pour le réintégrer dans le SVG statique.
+  if (WITH_FOX) {
   const fx = 1010, fy = groundRow * s - FOX_SITTING.length * s
   const [ax, ay] = TAIL_ANCHOR
   css += onOff('tA', [[0, 33], [50, 83]]) + onOff('tB', [[33.01, 49.99]]) + onOff('tC', [[83.01, 100]])
@@ -180,6 +184,8 @@ function scene(themeName) {
   css += '@keyframes blinkShut{0%,93%{opacity:0}94%,97%{opacity:1}98%,100%{opacity:0}}'
   body += `<g style="animation:blinkOpen 5s infinite">${sprite(FOX_SITTING, T.fox, fx, fy, s, { only: 'E' })}</g>`
   body += `<g opacity="0" style="animation:blinkShut 5s infinite">${cellsPath(FOX_EYES_CLOSED, fx, fy, s, T.fox.E)}</g>`
+
+  }
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMaxYMax slice" shape-rendering="crispEdges">
 <style>${css}

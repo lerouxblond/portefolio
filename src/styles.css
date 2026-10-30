@@ -825,7 +825,7 @@ ol {
   line-height: 1;
   color: var(--accent-ink);
 }
-.highlight__figure span {
+.highlight__figure > span {
   color: var(--ink-soft);
   font-size: var(--step--1);
 }
@@ -870,7 +870,7 @@ ol {
   flex-direction: column;
   gap: 14px;
 }
-.project--wide {
+.project-slot--wide {
   grid-column: 1 / -1;
 }
 .project--la-console {
@@ -890,7 +890,7 @@ ol {
   margin: 0;
   max-width: 44em;
 }
-.project--wide .project__points {
+.project-slot--wide .project__points {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px 32px;
 }
@@ -949,12 +949,6 @@ ol {
   border-left-color: var(--accent);
 }
 
-/* ─── Divider ────────────────────────────────────────────────────────── */
-.divider {
-  margin-top: clamp(56px, 8vw, 96px);
-  opacity: 0.85;
-}
-
 /* ─── Stack ──────────────────────────────────────────────────────────── */
 .stack {
   display: grid;
@@ -967,8 +961,14 @@ ol {
   margin-bottom: 12px;
 }
 .stack__icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+}
+.stack__icon img {
+  width: 44px;
   height: 44px;
-  width: auto;
 }
 .stack__names {
   margin: 10px 0 0;
@@ -994,9 +994,9 @@ ol {
 /* ─── Contact ────────────────────────────────────────────────────────── */
 .contact {
   display: grid;
-  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-  gap: 40px;
-  align-items: end;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
   margin-top: 40px;
 }
 .contact .lead {
@@ -1004,7 +1004,7 @@ ol {
 }
 .contact__mail {
   display: inline-block;
-  font-size: clamp(1.25rem, 4.2vw, 2.25rem);
+  font-size: clamp(1.2rem, 3.2vw, 1.75rem);
   font-weight: 700;
   word-break: break-word;
 }
@@ -1013,7 +1013,8 @@ ol {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  margin-top: 28px;
 }
 
 /* ─── Pied de page ───────────────────────────────────────────────────── */
@@ -1109,7 +1110,7 @@ ol {
 @media (max-width: 720px) {
   .projects,
   .highlights,
-  .project--wide .project__points {
+  .project-slot--wide .project__points {
     grid-template-columns: minmax(0, 1fr);
   }
   .project,
